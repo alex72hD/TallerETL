@@ -82,9 +82,6 @@ output/       SQLite y exportaciones XLSX (generados, no versionados)
 python -m unittest discover -s tests -v
 ```
 
-## Informe e integrantes
+## Integrante
+Robin Alexander Montoya Velasquez
 
-El PDF final debe completarse después de ejecutar el EDA para incluir cifras,
-gráficas y conclusiones verificables del dataset, además de la portada,
-integrantes y responsabilidades del grupo. No se incluyen resultados de ejemplo
-como si fueran hallazgos reales.
