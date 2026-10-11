@@ -65,6 +65,21 @@ class TransformacionTests(unittest.TestCase):
 
         self.assertEqual(result["price_category"].tolist(), ["Único rango"] * 3)
 
+    def test_el_id_de_mongo_no_oculta_duplicados_exactos(self):
+        result = self.transformacion.limpiar_dataframe(
+            pd.DataFrame(
+                {
+                    "_id": ["mongo-a", "mongo-b"],
+                    "id": [123, 123],
+                    "room_type": ["Entire home", "Entire home"],
+                }
+            ),
+            "Listings",
+        )
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result.loc[0, "_id"], "mongo-a")
+
 
 if __name__ == "__main__":
     unittest.main()

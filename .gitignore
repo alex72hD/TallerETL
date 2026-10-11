@@ -5,4 +5,5 @@ __pycache__/
 .ipynb_checkpoints/
 output/
 logs/*.log
+!logs/log_ETL_final.log
 !logs/.gitkeep

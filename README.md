@@ -39,10 +39,23 @@ También se pueden proporcionar los parámetros sin modificar `.env`:
 python -m src.main --mongo-uri mongodb://localhost:27017 --database airbnb_bogota
 ```
 
+Genera el informe PDF con cifras consultadas desde MongoDB:
+
+```powershell
+python -m src.informe
+```
+
+Por defecto, el informe se guarda como
+`Informe_Taller_2_ETL_Airbnb_Bogota.pdf` en la raíz del proyecto. Genéralo
+después del ETL y de revisar las celdas del Notebook para que la evidencia de
+entrega corresponda con la última ejecución.
+
 El proceso crea un log por ejecución en `logs/`, la base
-`output/airbnb.sqlite` y un archivo XLSX por colección en `output/excel/`.
-Cada tabla SQLite se verifica comparando el número de filas cargadas con el
-DataFrame de origen.
+`output/airbnb.sqlite` y un libro XLSX por colección en `output/excel/`.
+La extracción y la carga se hacen por bloques para manejar el tamaño de
+Calendar sin mantener toda la colección en memoria; si un libro supera el
+límite de filas de Excel, se distribuye en varias hojas. Cada tabla SQLite se
+verifica comparando sus filas con el total transformado.
 
 ## Exploración
 
@@ -66,6 +79,8 @@ output/       SQLite y exportaciones XLSX (generados, no versionados)
 
 - Elimina filas totalmente vacías y duplicados exactos; elimina columnas
   totalmente nulas y conserva nulos parciales para no descartar datos útiles.
+- Conserva el `_id` técnico de MongoDB por separado del `id` original y lo
+  excluye al comparar duplicados exactos.
 - Aplana documentos anidados (por ejemplo, campos de host), serializa listas
   como JSON y deriva `amenities_count`.
 - Convierte `price` a número quitando `$` y comas; los valores ilegibles se
@@ -83,5 +98,5 @@ python -m unittest discover -s tests -v
 ```
 
 ## Integrante
-Robin Alexander Montoya Velasquez
-
+Robin Alexander Montoya Velasquez (trabajo individual; responsable de la
+extracción, exploración, transformación, carga, pruebas y documentación).

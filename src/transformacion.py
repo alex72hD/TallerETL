@@ -44,7 +44,14 @@ class Transformacion:
         )
 
         frame = self._aplanar(dataframe.copy())
-        frame.columns = [self._normalizar_nombre(col) for col in frame.columns]
+        normalized_columns = [
+            self._normalizar_nombre(col) for col in frame.columns
+        ]
+        if len(set(normalized_columns)) != len(normalized_columns):
+            raise ValueError(
+                f"{nombre}: la normalización produce nombres de columna duplicados."
+            )
+        frame.columns = normalized_columns
         for column in frame.columns:
             frame[column] = frame[column].map(self._normalizar_valor)
 
@@ -63,9 +70,14 @@ class Transformacion:
                 ", ".join(empty_columns),
             )
 
-        duplicate_count = int(frame.duplicated().sum())
+        duplicate_columns = [column for column in frame.columns if column != "_id"]
+        duplicate_count = (
+            int(frame.duplicated(subset=duplicate_columns).sum())
+            if duplicate_columns
+            else 0
+        )
         if duplicate_count:
-            frame = frame.drop_duplicates().reset_index(drop=True)
+            frame = frame.drop_duplicates(subset=duplicate_columns).reset_index(drop=True)
         self.logger.info("%s: se eliminan %s registros duplicados", nombre, duplicate_count)
 
         for column in frame.columns:
@@ -125,6 +137,8 @@ class Transformacion:
 
     @staticmethod
     def _normalizar_nombre(value: Any) -> str:
+        if str(value).strip().lower() == "_id":
+            return "_id"
         name = re.sub(r"[^0-9a-zA-Z_]+", "_", str(value).strip().lower())
         return re.sub(r"_+", "_", name).strip("_")
 

@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from openpyxl import load_workbook
 import pandas as pd
 
 from src.carga import Carga
@@ -49,6 +50,35 @@ class CargaTests(unittest.TestCase):
 
             with self.assertRaisesRegex(ValueError, "sin columnas"):
                 loader.cargar({"Listings": pd.DataFrame()})
+
+    def test_carga_bloques_y_divide_xlsx_en_hojas(self):
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            root = Path(temporary_dir)
+            loader = Carga(
+                sqlite_path=root / "airbnb.sqlite",
+                excel_dir=root / "excel",
+                logger=logging.getLogger("test"),
+            )
+            loader.EXCEL_MAX_ROWS = 3
+            blocks = [
+                pd.DataFrame({"id": [1, 2], "price": [100, 200]}),
+                pd.DataFrame({"id": [3, 4, 5], "price": [300, 400, 500]}),
+            ]
+
+            loaded = loader.cargar_bloques("Calendar", blocks)
+
+            self.assertEqual(loaded, 5)
+            workbook = load_workbook(
+                root / "excel" / "calendar.xlsx", read_only=True
+            )
+            try:
+                self.assertEqual(workbook.sheetnames, ["calendar_001", "calendar_002", "calendar_003"])
+                self.assertEqual(
+                    list(workbook["calendar_003"].values),
+                    [("id", "price"), (5, 500)],
+                )
+            finally:
+                workbook.close()
 
 
 if __name__ == "__main__":
