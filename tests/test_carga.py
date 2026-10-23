@@ -7,7 +7,7 @@ from pathlib import Path
 from openpyxl import load_workbook
 import pandas as pd
 
-from src.carga import Carga
+from src.carga import Carga, ResumenMensualCalendario
 
 
 class CargaTests(unittest.TestCase):
@@ -79,6 +79,38 @@ class CargaTests(unittest.TestCase):
                 )
             finally:
                 workbook.close()
+
+    def test_exporta_resumen_de_calendar_como_calendar_xlsx(self):
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            root = Path(temporary_dir)
+            loader = Carga(
+                sqlite_path=root / "airbnb.sqlite",
+                excel_dir=root / "excel",
+                logger=logging.getLogger("test"),
+            )
+            resumen = ResumenMensualCalendario()
+            for _ in resumen.observar(
+                [
+                    pd.DataFrame(
+                        {
+                            "date_year": [2025, 2025, 2025],
+                            "date_month": [1, 1, 2],
+                            "available": [True, False, True],
+                            "listing_id": [10, 10, 20],
+                        }
+                    )
+                ]
+            ):
+                pass
+
+            path = loader.exportar_resumen_calendario(resumen.dataframe())
+
+            self.assertEqual(path.name, "calendar.xlsx")
+            result = pd.read_excel(path)
+            self.assertEqual(result["anio"].tolist(), [2025, 2025])
+            self.assertEqual(result["mes"].tolist(), [1, 2])
+            self.assertEqual(result["dias_disponibles"].tolist(), [1, 1])
+            self.assertEqual(result["anuncios_distintos"].tolist(), [1, 1])
 
 
 if __name__ == "__main__":

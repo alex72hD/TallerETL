@@ -52,10 +52,12 @@ entrega corresponda con la última ejecución.
 
 El proceso crea un log por ejecución en `logs/`, la base
 `output/airbnb.sqlite` y un libro XLSX por colección en `output/excel/`.
-La extracción y la carga se hacen por bloques para manejar el tamaño de
-Calendar sin mantener toda la colección en memoria; si un libro supera el
-límite de filas de Excel, se distribuye en varias hojas. Cada tabla SQLite se
-verifica comparando sus filas con el total transformado.
+Calendar se guarda completo en SQLite y se exporta como resumen mensual en
+`output/excel/calendar.xlsx`, ya que sus millones de filas no son prácticas
+para un libro de Excel. La extracción y la carga se hacen por bloques para
+limitar el uso de memoria; si otro libro supera el límite de filas de Excel,
+se distribuye en varias hojas. Cada tabla SQLite se verifica comparando sus
+filas con el total transformado.
 
 ## Exploración
 

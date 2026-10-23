@@ -150,7 +150,7 @@ class Carga:
         if resumen.empty:
             raise ValueError("El resumen mensual de Calendar está vacío.")
         self.excel_dir.mkdir(parents=True, exist_ok=True)
-        path = self.excel_dir / "calendar_resumen_mensual.xlsx"
+        path = self.excel_dir / "calendar.xlsx"
         resumen.to_excel(path, index=False, sheet_name="calendar_mensual")
         leidas = len(pd.read_excel(path))
         if leidas != len(resumen):
