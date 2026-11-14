@@ -67,11 +67,26 @@ Notebook se conecta a la misma base configurada en `.env`; incluye perfilado,
 calidad, distribuciones, valores atípicos, calendario mensual y hallazgos
 generados desde los datos reales.
 
+## Modelo de Machine Learning
+
+Después de ejecutar el ETL, abre `notebooks/modelo_precio_airbnb.ipynb` y ejecuta
+todas las celdas desde la raíz del proyecto. El notebook lee la tabla `listings`
+de `output/airbnb.sqlite`, prepara variables del alojamiento y compara un
+Random Forest de regresión con una línea base que predice la mediana del precio.
+Reporta MAE, RMSE y R² en un conjunto de prueba, además de gráficos de predicción
+y de importancia de variables. Para evitar que unos pocos valores extremos
+dominen el ajuste, el modelo se entrena entre los percentiles 1 y 99 del precio;
+el notebook informa cuántos anuncios quedan fuera de ese intervalo.
+
+La importancia de variables describe asociaciones predictivas, no efectos
+causales. El resultado representa la instantánea de los datos disponibles y no
+debe interpretarse como una recomendación automática de precios.
+
 ## Estructura
 
 ```text
 src/          Extracción, transformación, carga y punto de entrada
-notebooks/    Análisis exploratorio reproducible
+notebooks/    Análisis exploratorio y modelo reproducible
 tests/        Pruebas de transformación
 logs/         Logs de ejecución
 output/       SQLite y exportaciones XLSX (generados, no versionados)
@@ -99,6 +114,11 @@ output/       SQLite y exportaciones XLSX (generados, no versionados)
 python -m unittest discover -s tests -v
 ```
 
-## Integrante
-Robin Alexander Montoya Velasquez (trabajo individual; responsable de la
-extracción, exploración, transformación, carga, pruebas y documentación).
+## Equipo
+
+- **Robin Alexander Montoya Velasquez:** ETL, SQLite, notebook de ML y
+  validación técnica.
+- **Libardo Alcides Bedoya Carmona:** revisión y mejora del dashboard, conexión
+  al ETL y capturas.
+- **Juan Carlos Escobar Gil:** preguntas de negocio, integración de hallazgos,
+  redacción y entrega del informe y coordinación del video.
